@@ -4,7 +4,15 @@ import streamlit as st
 # ---------------- PAGE SETUP ----------------
 st.set_page_config(page_title="Number Guesser", page_icon="🎯")
 
-st.title("🎯 Number Guesser")
+# ---------------- HEADER ----------------
+st.markdown("""
+# 🎯 Number Guesser
+
+### 🚀 Created by Haziq  
+Turning simple ideas into interactive games 💡
+
+---
+""")
 
 # ---------------- SESSION STATE ----------------
 if "game_started" not in st.session_state:
@@ -53,7 +61,7 @@ else:
 
             # Correct guess
             if distance == 0:
-                st.success("🎉 Correct! You win! 🏆")
+                st.success("🎉 You cracked the code! Haziq would be impressed 😎")
                 st.session_state.game_started = False
 
             else:
@@ -84,9 +92,11 @@ else:
 
                 # Game over
                 if st.session_state.lives == 0:
-                    st.error("💀 Game Over!")
+                    st.error("💀 Game Over! Even the best miss sometimes... try again 🔁")
                     st.write(f"The number was {st.session_state.secret_number}")
                     st.session_state.game_started = False
+
+    st.caption("👀 Built with logic, luck, and a bit of genius by Haziq")
 
 # ---------------- PLAY AGAIN ----------------
 st.divider()
@@ -96,3 +106,20 @@ if st.button("Play Again 🔁"):
     st.session_state.secret_number = None
     st.session_state.lives = 0
     st.session_state.guesses = []
+
+# ---------------- FOOTER ----------------
+st.markdown("""
+---
+
+### 👑 About the Creator
+
+**Haziq** — a rising developer who turns ideas into games.  
+From terminal scripts to web apps, this is just the beginning.
+
+💻 Built using Python & Streamlit  
+🔥 More projects coming soon...
+
+---
+
+⚡ *"Simple games. Smart logic. Clean execution."*
+""")
