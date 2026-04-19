@@ -8,7 +8,7 @@ st.set_page_config(page_title="Number Guesser", page_icon="🎯", layout="center
 st.markdown("""
 # 🎯 Number Guesser
 
-### 🚀 Created by **Hashim**  
+### 🚀 Created by **Haziq**  
 Turning simple ideas into interactive games 💡
 
 ---
