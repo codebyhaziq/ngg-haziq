@@ -23,19 +23,32 @@ if "game_started" not in st.session_state:
     st.session_state.min_number = 1
     st.session_state.max_number = 100
 
-# ---------------- GAME SETUP ----------------
+# ---------------- SETUP SCREEN ----------------
 if not st.session_state.game_started:
 
-    st.header("Game Setup")
+    st.header("🎮 Game Setup")
 
-    min_number = st.number_input("Smallest number 🔽", value=1)
-    max_number = st.number_input("Largest number 🔼", value=100)
-    lives = st.number_input("Lives ❤️", value=5)
+    # Slider (faster + more game-like)
+    min_number, max_number = st.slider(
+        "Select your range 🎯",
+        min_value=0,
+        max_value=1000,
+        value=(1, 100)
+    )
 
-    if st.button("Start Game 🎮"):
+    # Lives
+    lives = st.number_input(
+        "Lives ❤️",
+        min_value=1,
+        max_value=50,
+        value=5,
+        step=1
+    )
+
+    if st.button("Start Game 🚀"):
 
         if min_number >= max_number:
-            st.warning("Max number must be greater than min number!")
+            st.warning("❌ Minimum must be smaller than maximum!")
         else:
             st.session_state.min_number = min_number
             st.session_state.max_number = max_number
@@ -44,61 +57,62 @@ if not st.session_state.game_started:
             st.session_state.guesses = []
             st.session_state.game_started = True
 
-# ---------------- GAME PLAY ----------------
+            st.success("🔥 Game Started! Haziq’s challenge begins...")
+
+# ---------------- GAME SCREEN ----------------
 else:
-    st.header("Make a Guess 🤔")
 
-    guess = st.number_input("Your guess", step=1)
+    st.header("🤔 Make a Guess")
 
-    if st.button("Submit Guess"):
+    guess = st.number_input(
+        "Your guess",
+        min_value=st.session_state.min_number,
+        max_value=st.session_state.max_number,
+        step=1
+    )
 
-        if guess < st.session_state.min_number or guess > st.session_state.max_number:
-            st.warning("Guess must be within your range!")
+    if st.button("Submit Guess 🎯"):
+
+        st.session_state.guesses.append(guess)
+        distance = abs(st.session_state.secret_number - guess)
+
+        # Correct guess
+        if distance == 0:
+            st.success("🎉 You cracked the code! Haziq is impressed 😎")
+            st.session_state.game_started = False
+
         else:
-            st.session_state.guesses.append(guess)
+            st.session_state.lives -= 1
 
-            distance = abs(st.session_state.secret_number - guess)
+            st.write(f"📜 Guesses: {st.session_state.guesses}")
+            st.write(f"❤️ Lives left: {st.session_state.lives}")
 
-            # Correct guess
-            if distance == 0:
-                st.success("🎉 You cracked the code! Haziq would be impressed 😎")
-                st.session_state.game_started = False
+            if st.session_state.lives > 0:
+
+                if distance <= 2:
+                    st.error("🔥 Boiling hot")
+                elif distance <= 5:
+                    st.warning("🌡️ Hot")
+                elif distance <= 10:
+                    st.info("🙂 Warm")
+                elif distance <= 20:
+                    st.info("❄️ Cold")
+                else:
+                    st.info("🥶 Freezing")
+
+                if guess > st.session_state.secret_number:
+                    st.write("⬇️ Try lower!")
+                else:
+                    st.write("⬆️ Try higher!")
 
             else:
-                st.session_state.lives -= 1
+                st.error("💀 Game Over! Even legends miss sometimes 🔁")
+                st.write(f"🔐 The number was: {st.session_state.secret_number}")
+                st.session_state.game_started = False
 
-                st.write(f"📜 Previous guesses: {st.session_state.guesses}")
-                st.write(f"❤️ Remaining lives: {st.session_state.lives}")
+    st.caption("👀 Built with logic, luck, and creativity by Haziq")
 
-                if st.session_state.lives > 0:
-
-                    # Hints
-                    if distance <= 2:
-                        st.error("🔥 Boiling hot")
-                    elif distance <= 5:
-                        st.warning("🌡️ Hot")
-                    elif distance <= 10:
-                        st.info("🙂 Warm")
-                    elif distance <= 20:
-                        st.info("❄️ Cold")
-                    else:
-                        st.info("🥶 Freezing")
-
-                    # Direction hint
-                    if guess > st.session_state.secret_number:
-                        st.write("⬇️ Try lower!")
-                    else:
-                        st.write("⬆️ Try higher!")
-
-                # Game over
-                if st.session_state.lives == 0:
-                    st.error("💀 Game Over! Even the best miss sometimes... try again 🔁")
-                    st.write(f"The number was {st.session_state.secret_number}")
-                    st.session_state.game_started = False
-
-    st.caption("👀 Built with logic, luck, and a bit of genius by Haziq")
-
-# ---------------- PLAY AGAIN ----------------
+# ---------------- RESET ----------------
 st.divider()
 
 if st.button("Play Again 🔁"):
@@ -113,13 +127,13 @@ st.markdown("""
 
 ### 👑 About the Creator
 
-**Haziq** — a rising developer who turns ideas into games.  
-From terminal scripts to web apps, this is just the beginning.
+**Haziq** — a rising developer building interactive games from scratch.  
+From simple Python scripts to full web apps, this is just the beginning.
 
-💻 Built using Python & Streamlit  
-🔥 More projects coming soon...
+💻 Built with Python & Streamlit  
+🚀 More projects coming soon
 
 ---
 
-⚡ *"Simple games. Smart logic. Clean execution."*
+⚡ *"Think simple. Build smart. Execute clean."*
 """)
