@@ -24,35 +24,14 @@ if not st.session_state.game_started:
 
     st.header("🎮 Game Setup")
 
-    # SLIDER (main control)
-    min_s, max_s = st.slider(
+    min_number, max_number = st.slider(
         "Select range 🎯",
         0, 1000,
-        (st.session_state.min_number, st.session_state.max_number)
+        (1, 100)
     )
-
-    # SYNC number inputs with slider
-    col1, col2 = st.columns(2)
-
-    with col1:
-        min_number = st.number_input(
-            "Minimum 🔽",
-            0, 1000,
-            value=min_s,
-            step=1
-        )
-
-    with col2:
-        max_number = st.number_input(
-            "Maximum 🔼",
-            0, 1000,
-            value=max_s,
-            step=1
-        )
 
     lives = st.number_input("Lives ❤️", 1, 20, 5, 1)
 
-    # START GAME
     if st.button("🚀 Start Game"):
 
         if min_number >= max_number:
@@ -73,18 +52,22 @@ else:
 
     st.header("🤔 Guess the Number")
 
-    # ❌ NO DIFFICULTY SLIDER HERE (as you requested)
-
     st.info(f"Range: {st.session_state.min_number} - {st.session_state.max_number}")
 
-    guess = st.number_input(
-        "Your guess",
-        min_value=st.session_state.min_number,
-        max_value=st.session_state.max_number,
-        step=1
-    )
+    # 🔥 FORM = ENTER KEY SUBMIT FIX
+    with st.form("guess_form", clear_on_submit=True):
 
-    if st.button("🎯 Submit Guess"):
+        guess = st.number_input(
+            "Your guess (press Enter to submit)",
+            min_value=st.session_state.min_number,
+            max_value=st.session_state.max_number,
+            step=1
+        )
+
+        submitted = st.form_submit_button("🎯 Submit")
+
+    # ---------------- LOGIC ----------------
+    if submitted:
 
         st.session_state.guesses.append(guess)
         distance = abs(st.session_state.secret_number - guess)
