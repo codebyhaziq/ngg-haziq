@@ -24,11 +24,29 @@ if not st.session_state.game_started:
 
     st.header("🎮 Game Setup")
 
-    min_number, max_number = st.slider(
+    min_s, max_s = st.slider(
         "Select range 🎯",
         0, 1000,
-        (1, 100)
+        (st.session_state.min_number, st.session_state.max_number)
     )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        min_number = st.number_input(
+            "Minimum 🔽",
+            0, 1000,
+            value=min_s,
+            step=1
+        )
+
+    with col2:
+        max_number = st.number_input(
+            "Maximum 🔼",
+            0, 1000,
+            value=max_s,
+            step=1
+        )
 
     lives = st.number_input("Lives ❤️", 1, 20, 5, 1)
 
@@ -54,19 +72,19 @@ else:
 
     st.info(f"Range: {st.session_state.min_number} - {st.session_state.max_number}")
 
-    # 🔥 FORM = ENTER KEY SUBMIT FIX
+    # ✅ ENTER KEY FIX USING FORM
     with st.form("guess_form", clear_on_submit=True):
 
         guess = st.number_input(
-            "Your guess (press Enter to submit)",
+            "Your guess",
             min_value=st.session_state.min_number,
             max_value=st.session_state.max_number,
             step=1
         )
 
-        submitted = st.form_submit_button("🎯 Submit")
+        submitted = st.form_submit_button("🎯 Submit Guess")
 
-    # ---------------- LOGIC ----------------
+    # ---------------- LOGIC (UNCHANGED) ----------------
     if submitted:
 
         st.session_state.guesses.append(guess)
