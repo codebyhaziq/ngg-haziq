@@ -4,7 +4,7 @@ import streamlit as st
 # ---------------- PAGE ----------------
 st.set_page_config(page_title="Number Guesser", page_icon="🎯", layout="centered")
 
-# ---------------- HEADER (YOUR STYLE BACK) ----------------
+# ---------------- HEADER ----------------
 st.markdown("""
 # 🎯 Number Guesser
 
@@ -41,8 +41,7 @@ if not st.session_state.game_started:
             "Minimum 🔽",
             0, 1000,
             value=min_s,
-            step=1,
-            key="min_input"
+            step=1
         )
 
     with col2:
@@ -50,11 +49,10 @@ if not st.session_state.game_started:
             "Maximum 🔼",
             0, 1000,
             value=max_s,
-            step=1,
-            key="max_input"
+            step=1
         )
 
-    lives = st.number_input("Lives ❤️", 1, 20, 5, 1, key="lives_input")
+    lives = st.number_input("Lives ❤️", 1, 20, 5, 1)
 
     if st.button("🚀 Start Game"):
 
@@ -78,27 +76,30 @@ else:
 
     st.info(f"Range: {st.session_state.min_number} - {st.session_state.max_number}")
 
-    # 🔥 FIXED INPUT (THIS SOLVES YOUR "ALWAYS 1" BUG)
-    guess = st.text_input("Your guess (type a number and press Enter)")
+    # ✅ ENTER KEY FIX (REAL SOLUTION)
+    with st.form("guess_form"):
 
-    submitted = st.button("🎯 Submit Guess")
+        guess_input = st.text_input("Your guess (type number and press Enter)")
 
-    # convert safely (prevents reset to 1 issue)
+        submitted = st.form_submit_button("🎯 Submit Guess")
+
+    # ---------------- GAME LOGIC ----------------
     if submitted:
 
         try:
-            guess = int(guess)
+            guess = int(guess_input)
         except:
             st.error("❌ Please enter a valid number!")
             st.stop()
 
         if guess < st.session_state.min_number or guess > st.session_state.max_number:
-            st.warning("Out of range!")
+            st.warning("❌ Out of range!")
             st.stop()
 
         st.session_state.guesses.append(guess)
         distance = abs(st.session_state.secret_number - guess)
 
+        # WIN
         if distance == 0:
             st.success("🏆 YOU WIN! Haziq approves 😎")
             st.snow()
@@ -110,6 +111,7 @@ else:
             st.write(f"📜 Guesses: {st.session_state.guesses}")
             st.write(f"❤️ Lives: {st.session_state.lives}")
 
+            # HINTS
             if distance <= 2:
                 st.error("🔥 Boiling hot")
             elif distance <= 5:
@@ -126,6 +128,7 @@ else:
             else:
                 st.write("⬆️ Higher!")
 
+            # GAME OVER
             if st.session_state.lives == 0:
                 st.error("💀 Game Over")
                 st.write(f"Number was: {st.session_state.secret_number}")
@@ -143,7 +146,7 @@ if st.button("🔁 Play Again"):
     st.session_state.lives = 0
     st.session_state.guesses = []
 
-# ---------------- FOOTER (YOUR STYLE BACK) ----------------
+# ---------------- FOOTER ----------------
 st.markdown("""
 ---
 ### 👑 About the Creator
