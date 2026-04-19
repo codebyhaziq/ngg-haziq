@@ -4,9 +4,13 @@ import streamlit as st
 # ---------------- PAGE ----------------
 st.set_page_config(page_title="Number Guesser", page_icon="🎯", layout="centered")
 
+# ---------------- HEADER (YOUR STYLE BACK) ----------------
 st.markdown("""
 # 🎯 Number Guesser
-### 🚀 Created by Haziq
+
+### 🚀 Created by **Haziq**  
+Turning simple ideas into interactive games 💡
+
 ---
 """)
 
@@ -37,7 +41,8 @@ if not st.session_state.game_started:
             "Minimum 🔽",
             0, 1000,
             value=min_s,
-            step=1
+            step=1,
+            key="min_input"
         )
 
     with col2:
@@ -45,10 +50,11 @@ if not st.session_state.game_started:
             "Maximum 🔼",
             0, 1000,
             value=max_s,
-            step=1
+            step=1,
+            key="max_input"
         )
 
-    lives = st.number_input("Lives ❤️", 1, 20, 5, 1)
+    lives = st.number_input("Lives ❤️", 1, 20, 5, 1, key="lives_input")
 
     if st.button("🚀 Start Game"):
 
@@ -72,20 +78,23 @@ else:
 
     st.info(f"Range: {st.session_state.min_number} - {st.session_state.max_number}")
 
-    # ✅ ENTER KEY FIX USING FORM
-    with st.form("guess_form", clear_on_submit=True):
+    # 🔥 FIXED INPUT (THIS SOLVES YOUR "ALWAYS 1" BUG)
+    guess = st.text_input("Your guess (type a number and press Enter)")
 
-        guess = st.number_input(
-            "Your guess",
-            min_value=st.session_state.min_number,
-            max_value=st.session_state.max_number,
-            step=1
-        )
+    submitted = st.button("🎯 Submit Guess")
 
-        submitted = st.form_submit_button("🎯 Submit Guess")
-
-    # ---------------- LOGIC (UNCHANGED) ----------------
+    # convert safely (prevents reset to 1 issue)
     if submitted:
+
+        try:
+            guess = int(guess)
+        except:
+            st.error("❌ Please enter a valid number!")
+            st.stop()
+
+        if guess < st.session_state.min_number or guess > st.session_state.max_number:
+            st.warning("Out of range!")
+            st.stop()
 
         st.session_state.guesses.append(guess)
         distance = abs(st.session_state.secret_number - guess)
@@ -133,3 +142,19 @@ if st.button("🔁 Play Again"):
     st.session_state.secret_number = None
     st.session_state.lives = 0
     st.session_state.guesses = []
+
+# ---------------- FOOTER (YOUR STYLE BACK) ----------------
+st.markdown("""
+---
+### 👑 About the Creator
+
+**Haziq** — a rising developer turning ideas into interactive experiences.  
+This Number Guesser is just the beginning.
+
+💻 Python + Streamlit  
+🚀 More projects coming soon
+
+---
+
+⚡ *"Simple ideas. Powerful execution."*
+""")
