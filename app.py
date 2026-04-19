@@ -1,45 +1,50 @@
 import random
 import streamlit as st
-import pyfiglet
 
 # ---------------- PAGE SETUP ----------------
 st.set_page_config(page_title="Number Guesser", page_icon="🎯")
 
-# ASCII Banner
-banner = pyfiglet.figlet_format("NUMBER GUESSER")
-st.text(banner)
+st.title("🎯 Number Guesser")
 
 # ---------------- SESSION STATE ----------------
-if "secret_number" not in st.session_state:
+if "game_started" not in st.session_state:
+    st.session_state.game_started = False
     st.session_state.secret_number = None
     st.session_state.lives = 0
     st.session_state.guesses = []
-    st.session_state.game_started = False
+    st.session_state.min_number = 1
+    st.session_state.max_number = 100
 
 # ---------------- GAME SETUP ----------------
-st.header("Game Setup")
+if not st.session_state.game_started:
 
-min_number = st.number_input("Smallest number 🔽", value=1)
-max_number = st.number_input("Largest number 🔼", value=100)
-lives = st.number_input("Lives ❤️", value=5)
+    st.header("Game Setup")
 
-if st.button("Start Game 🎮"):
-    st.session_state.secret_number = random.randint(min_number, max_number)
-    st.session_state.lives = lives
-    st.session_state.guesses = []
-    st.session_state.game_started = True
+    min_number = st.number_input("Smallest number 🔽", value=1)
+    max_number = st.number_input("Largest number 🔼", value=100)
+    lives = st.number_input("Lives ❤️", value=5)
 
-# ---------------- GAME LOOP ----------------
-if st.session_state.game_started:
+    if st.button("Start Game 🎮"):
 
-    st.subheader("Make a Guess 🤔")
+        if min_number >= max_number:
+            st.warning("Max number must be greater than min number!")
+        else:
+            st.session_state.min_number = min_number
+            st.session_state.max_number = max_number
+            st.session_state.secret_number = random.randint(min_number, max_number)
+            st.session_state.lives = lives
+            st.session_state.guesses = []
+            st.session_state.game_started = True
 
-    guess = st.number_input("Your guess", step=1, key="guess_input")
+# ---------------- GAME PLAY ----------------
+else:
+    st.header("Make a Guess 🤔")
+
+    guess = st.number_input("Your guess", step=1)
 
     if st.button("Submit Guess"):
 
-        # Check range
-        if guess < min_number or guess > max_number:
+        if guess < st.session_state.min_number or guess > st.session_state.max_number:
             st.warning("Guess must be within your range!")
         else:
             st.session_state.guesses.append(guess)
@@ -57,8 +62,9 @@ if st.session_state.game_started:
                 st.write(f"📜 Previous guesses: {st.session_state.guesses}")
                 st.write(f"❤️ Remaining lives: {st.session_state.lives}")
 
-                # Hints
                 if st.session_state.lives > 0:
+
+                    # Hints
                     if distance <= 2:
                         st.error("🔥 Boiling hot")
                     elif distance <= 5:
@@ -79,12 +85,14 @@ if st.session_state.game_started:
                 # Game over
                 if st.session_state.lives == 0:
                     st.error("💀 Game Over!")
-                    st.write(f"The correct number was: {st.session_state.secret_number}")
+                    st.write(f"The number was {st.session_state.secret_number}")
                     st.session_state.game_started = False
 
-# ---------------- RESET BUTTON ----------------
+# ---------------- PLAY AGAIN ----------------
+st.divider()
+
 if st.button("Play Again 🔁"):
+    st.session_state.game_started = False
     st.session_state.secret_number = None
     st.session_state.lives = 0
     st.session_state.guesses = []
-    st.session_state.game_started = False
